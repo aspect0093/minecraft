@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elite Minecraft Server</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Press+Start+2P&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/scrollreveal"></script>
+  <style>
+    /* Color Palette Update: Yellow & Black Theme */
+    :root {
+      --primary-black: #1A1A1A; /* Main background black */
+      --secondary-black: #2C2C2C; /* Slightly lighter black for accents */
+      --accent-yellow: #FFD700; /* Bright gold/yellow for main accent */
+      --accent-orange: #FFA500; /* Orange for secondary accent/highlights */
+      --text-light: #F0F0F0; /* Off-white for general text */
+      --text-dark: #1A1A1A; /* Black for text on yellow elements */
+
+      --panel-bg: rgba(255, 215, 0, 0.1); /* Slightly transparent yellow for panels */
+      --panel-border: #FFD700; /* Solid yellow border */
+      --panel-shadow-light: rgba(255, 215, 0, 0.3);
+      --panel-shadow-dark: rgba(255, 215, 0, 0.5);
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--primary-black) 0%, var(--secondary-black) 100%);
+      color: var(--text-light);
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Anime/Cartoon Background - Dynamic Shapes/Particles */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23FFD700" stroke-width="1" opacity="0.05"/><rect x="10" y="10" width="80" height="80" fill="none" stroke="%23FFA500" stroke-width="1" opacity="0.05"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><path fill="%232C2C2C" d="M100 0L200 100L100 200L0 100Z" opacity="0.08"/><path fill="%231A1A1A" d="M100 50L150 100L100 150L50 100Z" opacity="0.08"/></svg>');
+      background-size: 50px 50px, 150px 150px, cover;
+      background-position: 0 0, 20px 20px, center center;
+      opacity: 0.2; /* More visible but still subtle */
+      z-index: -1;
+      animation: backgroundRotate 30s linear infinite, backgroundPan 60s linear infinite;
+    }
+
+    @keyframes backgroundRotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes backgroundPan {
+      from { background-position: 0% 0%, 20px 20px; }
+      to { background-position: 100% 100%, 120px 120px; }
+    }
+
+    .anime-panel {
+      background: var(--panel-bg);
+      border-radius: 1.5rem;
+      border: 3px solid var(--panel-border); /* Thicker, solid border */
+      box-shadow: 0 10px 25px var(--panel-shadow-light), 0 0 15px var(--panel-shadow-light) inset; /* Outer and inner glow */
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smoother animation */
+      position: relative;
+      overflow: hidden; /* For shine effect */
+    }
+
+    .anime-panel::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 0;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(45deg);
+      transition: width 0.3s ease;
+      z-index: 0;
+    }
+
+    .anime-panel:hover {
+      transform: translateY(-8px) scale(1.01); /* Lift and scale slightly */
+      box-shadow: 0 20px 40px var(--panel-shadow-dark), 0 0 25px var(--panel-shadow-dark) inset;
+    }
+
+    .anime-panel:hover::before {
+        width: 150%; /* Shine effect on hover */
+    }
+
+    .btn-primary {
+      background: linear-gradient(45deg, var(--accent-yellow), var(--accent-orange));
+      box-shadow: 0 8px 20px var(--accent-yellow); /* Yellow shadow */
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border: 2px solid var(--text-dark); /* Black border for cartoon look */
+      color: var(--text-dark); /* Black text on yellow button */
+      font-family: 'Press Start 2P', cursive; /* Retro pixel font */
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 12px 25px var(--accent-orange);
+      filter: brightness(1.15);
+      border-color: var(--text-light); /* White border on hover */
+    }
+
+    .btn-copy {
+      background: var(--secondary-black);
+      color: var(--accent-yellow);
+      border: 2px solid var(--accent-yellow);
+      font-family: 'Press Start 2P', cursive;
+      transition: all 0.3s ease;
+    }
+
+    .btn-copy:hover {
+      background: var(--accent-yellow);
+      color: var(--text-dark);
+      border-color: var(--text-dark);
+      transform: scale(1.05);
+    }
+
+    /* Watermark styling */
+    .watermark {
+      position: fixed;
+      bottom: 30px;
+      left: 35px;
+      font-family: 'Bangers', cursive; /* Comic book style font */
+      font-size: 1.2rem; /* Larger */
+      color: rgba(255, 215, 0, 0.5); /* Yellow subtle */
+      letter-spacing: 3px;
+      transform-origin: bottom left;
+      transform: rotate(-90deg);
+      cursor: pointer;
+      transition: all 0.4s ease-in-out;
+      z-index: 100;
+      text-shadow: 2px 2px 0px var(--primary-black); /* Outline effect */
+    }
+
+    .watermark:hover {
+      color: var(--accent-yellow);
+      text-shadow: 0 0 15px var(--accent-yellow), 2px 2px 0px var(--primary-black);
+    }
+
+    /* Custom scrollbar for premium feel */
+    body::-webkit-scrollbar {
+      width: 16px; /* Wider */
+    }
+
+    body::-webkit-scrollbar-track {
+      background: var(--primary-black);
+      border-left: 2px solid var(--secondary-black);
+    }
+
+    body::-webkit-scrollbar-thumb {
+      background-color: var(--accent-yellow);
+      border-radius: 10px;
+      border: 4px solid var(--primary-black);
+    }
+
+    body::-webkit-scrollbar-thumb:hover {
+      background-color: var(--accent-orange);
+    }
+
+    /* Custom classes for advanced animations */
+    .animate-bounce-y {
+      animation: bounceY 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes bounceY {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+
+    .animate-shake {
+        animation: shake 0.8s cubic-bezier(.36,.07,.19,.97) infinite both;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    /* Hero section specific styles */
+    .hero-section h1 {
+      font-family: 'Bangers', cursive;
+      letter-spacing: 2px;
+      text-shadow: 5px 5px 0px var(--primary-black), 7px 7px 0px var(--secondary-black); /* Cartoon outline effect */
+    }
+
+    .hero-section h1 .text-accent-yellow {
+        text-shadow: 3px 3px 0px var(--accent-orange); /* Inner shadow for yellow text */
+    }
+
+    .hero-section p {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Player Count specific animation */
+    #playerCount {
+      font-family: 'Press Start 2P', cursive;
+      text-shadow: 3px 3px 0px var(--accent-orange);
+    }
+
+    /* Leaderboard list item styling */
+    #leaderboard li {
+        border-bottom: 2px dashed var(--accent-yellow); /* Dashed border for comic effect */
+        background: rgba(255, 215, 0, 0.05);
+    }
+    #leaderboard li:last-child {
+        border-bottom: none;
+    }
+    #leaderboard li span {
+        position: relative; /* Ensure text is above pseudo-elements */
+        z-index: 1;
+    }
+    #leaderboard li::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 0;
+    }
+    #leaderboard li:hover::before {
+        opacity: 1;
+    }
+
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .hero-section h1 {
+        font-size: 3.5rem; /* Adjusted for smaller screens */
+        text-shadow: 3px 3px 0px var(--primary-black), 5px 5px 0px var(--secondary-black);
+      }
+      .hero-section h1 .text-accent-yellow {
+          text-shadow: 2px 2px 0px var(--accent-orange);
+      }
+      .hero-section p {
+        font-size: 0.9rem;
+      }
+      .watermark {
+        transform: rotate(0deg);
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+      }
+      #playerCount {
+        font-size: 4rem;
+      }
+      .anime-panel {
+          border-radius: 1rem;
+      }
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden">
+
+  <div class="watermark" onclick="window.open('https://lunarwave.space','_blank')">LUNARWAVE</div>
+
+  <section class="hero-section h-screen flex flex-col justify-center items-center text-center px-6 md:px-12 relative z-10">
+    <h1 class="text-6xl md:text-7xl font-extrabold mb-4 text-white animate-fade-in-up">
+      🚀 <span class="text-accent-yellow">Elite</span> Minecraft Server
+    </h1>
+    <p class="text-gray-300 mb-8 text-lg md:text-xl max-w-2xl animate-fade-in-up delay-300">
+      Embark on an epic journey! Discover vibrant realms, conquer challenges, and ascend the ranks. Your adventure starts now.
+    </p>
+    <a href="https://discord.gg/YOUR_INVITE" target="_blank" class="btn-primary px-8 py-4 rounded-full text-white font-semibold shadow-xl transition transform hover:scale-105 animate-fade-in-up delay-600 animate-bounce-y">
+      Join Our Discord Realm
+    </a>
+  </section>
+
+  <section class="py-16 px-6 md:px-12 z-10">
+    <div class="anime-panel p-8 rounded-xl text-center max-w-2xl mx-auto shadow-2xl reveal-item">
+      <div class="text-3xl font-bold text-white mb-4 animate-shake">Live Player Count</div>
+      <div id="playerCount" class="text-6xl mt-4 text-accent-yellow font-extrabold">Loading...</div>
+      <div id="ipBlock" class="mt-8 hidden">
+        <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-6">
+          <span id="serverIp" class="text-2xl font-mono bg-gray-800 p-3 rounded-lg border border-gray-700 select-all text-accent-yellow animate-pulse-fade"></span>
+          <button class="btn-copy px-6 py-3 rounded-xl font-semibold shadow-lg copy transition transform hover:scale-105" data-clipboard-text="">
+            Copy IP
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 px-6 md:px-12 z-10">
+    <h2 class="text-4xl font-bold mb-10 text-center text-white reveal-item hero-text-outline">📸 Epic Server Showcase</h2>
+    <div id="screenshots" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-6xl mx-auto">
+    </div>
+  </section>
+
+  <section class="py-16 px-6 md:px-12 z-10">
+    <h2 class="text-4xl font-bold mb-10 text-center text-white reveal-item hero-text-outline">🏆 Top Adventurers</h2>
+    <ul id="leaderboard" class="max-w-xl mx-auto space-y-6 reveal-item">
+    </ul>
+  </section>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const CONFIG = {
+      // SET THIS TO TRUE OR FALSE TO SHOW/HIDE THE IP ADDRESS
+      showIp: true, // <--- TOGGLE THIS! Set to 'false' to hide the IP.
+      serverIp: "play.yourserver.net", // REMEMBER TO CHANGE THIS TO YOUR ACTUAL SERVER IP
+      screenshots: [
+        "https://via.placeholder.com/600x400/FFD700/1A1A1A?text=Server+Screenshot+1", // Yellow/Black placeholders
+        "https://via.placeholder.com/600x400/1A1A1A/FFD700?text=Server+Screenshot+2",
+        "https://via.placeholder.com/600x400/FFD700/1A1A1A?text=Server+Screenshot+3",
+        "https://via.placeholder.com/600x400/1A1A1A/FFD700?text=Server+Screenshot+4",
+        "https://via.placeholder.com/600x400/FFD700/1A1A1A?text=Server+Screenshot+5",
+        "https://via.placeholder.com/600x400/1A1A1A/FFD700?text=Server+Screenshot+6"
+      ],
+      leaderboard: [
+        { name: "ThunderPunch", score: 99999 },
+        { name: "StarGazer", score: 88888 },
+        { name: "DungeonMaster", score: 77777 },
+        { name: "MysticMiner", score: 66666 },
+        { name: "EpicBuilder", score: 55555 }
+      ],
+      serverQueryUrl: "https://api.mcstatus.io/v2/status/java/play.yourserver.net" // REMEMBER TO CHANGE THIS TO YOUR ACTUAL SERVER IP
+    };
+
+    let clipboard = null;
+
+    if (CONFIG.showIp) {
+      document.getElementById('ipBlock').classList.remove('hidden');
+      document.getElementById('serverIp').textContent = CONFIG.serverIp;
+      document.querySelector('.copy').setAttribute('data-clipboard-text', CONFIG.serverIp);
+      clipboard = new ClipboardJS('.copy');
+      clipboard.on('success', function(e) {
+          e.trigger.textContent = 'Copied!';
+          gsap.fromTo(e.trigger, { scale: 1 }, { scale: 1.1, yoyo: true, repeat: 1, duration: 0.2 });
+          setTimeout(() => {
+              e.trigger.textContent = 'Copy IP';
+          }, 2000);
+          e.clearSelection();
+      });
+      clipboard.on('error', function(e) {
+          console.error('Action:', e.action);
+          console.error('Trigger:', e.trigger);
+          alert('Failed to copy IP. Please copy it manually: ' + CONFIG.serverIp);
+      });
+    } else {
+        const copyButton = document.querySelector('.copy');
+        if (copyButton) {
+            copyButton.remove();
+        }
+    }
+
+    const ssContainer = document.getElementById('screenshots');
+    CONFIG.screenshots.forEach(url => {
+      const imgWrapper = document.createElement('div');
+      imgWrapper.className = 'anime-panel p-2 reveal-item';
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = 'Minecraft Server Screenshot';
+      img.className = 'rounded-lg w-full h-56 object-cover shadow-md transition-transform duration-300 hover:scale-102';
+      imgWrapper.appendChild(img);
+      ssContainer.appendChild(imgWrapper);
+    });
+
+    const lb = document.getElementById('leaderboard');
+    CONFIG.leaderboard.forEach((player, i) => {
+      const li = document.createElement('li');
+      li.className = 'anime-panel p-6 rounded-lg flex justify-between items-center text-xl shadow-md reveal-item relative';
+      li.innerHTML = `
+        <span class="text-accent-yellow font-bold text-2xl z-10 font-press-start-2p">#${i + 1}</span>
+        <span class="text-white font-semibold z-10">${player.name}</span>
+        <span class="text-gray-400 text-lg z-10">${player.score} pts</span>
+      `;
+      lb.appendChild(li);
+    });
+
+    async function fetchPlayerCount() {
+      try {
+        const res = await fetch(CONFIG.serverQueryUrl);
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const json = await res.json();
+        const players = json?.players?.online ?? 0;
+        document.getElementById('playerCount').textContent = `${players} Players Online`;
+        gsap.fromTo("#playerCount", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(1.7)" });
+      } catch (e) {
+        document.getElementById('playerCount').textContent = `Error Fetching`;
+        console.error("Failed to fetch player count:", e);
+      }
+    }
+    fetchPlayerCount();
+    setInterval(fetchPlayerCount, 30000); // Update every 30 seconds
+
+    // --- GSAP Page Load Animations (replacing intro overlay) ---
+    window.addEventListener('load', () => {
+      gsap.from(".hero-section h1", { opacity: 0, y: 50, duration: 1.2, ease: "power3.out", delay: 0.2 });
+      gsap.from(".hero-section p", { opacity: 0, y: 50, duration: 1.2, ease: "power3.out", delay: 0.5 });
+      gsap.from(".hero-section .btn-primary", { opacity: 0, y: 50, duration: 1.2, ease: "power3.out", delay: 0.8 });
+      gsap.from(".watermark", { opacity: 0, x: -50, duration: 1, ease: "power2.out", delay: 1.5 });
+    });
+
+    // --- ScrollReveal Animations ---
+    ScrollReveal().reveal('.reveal-item', {
+      delay: 250,
+      distance: '80px',
+      origin: 'bottom',
+      interval: 150, /* Staggered reveal for multiple items */
+      easing: 'cubic-bezier(0.6, 0.2, 0.1, 1)',
+      mobile: false,
+      opacity: 0,
+      scale: 0.95
+    });
+
+    // Add some extra animations for titles on scroll
+    ScrollReveal().reveal('.hero-text-outline', {
+      delay: 200,
+      duration: 800,
+      distance: '30px',
+      origin: 'top',
+      opacity: 0,
+      easing: 'ease-in-out',
+      rotate: { x: 0, y: 0, z: 5 } /* Slight rotation for cartoon feel */
+    });
+
+  </script>
+</body>
+</html>
